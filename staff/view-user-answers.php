@@ -1,0 +1,223 @@
+<?php 
+	require_once('../admin/lib/functions.php');
+
+	$db		=	new login_function();
+	
+	if(isset($_SESSION['staff_login']))
+	{
+		$staff_login	=	$_SESSION['staff_login'];
+	}
+	if(!isset($_SESSION['staff_login']))
+	{	
+		header("location:../index.php");
+	}
+	
+	$flag 			= 0;
+	$success_msg 	= 0;
+	$title 			= "";
+	$duration 		= "";
+	$mode 			= "";
+	$fees 			= "";
+	$description	= "";
+	$contact 		= "";
+	$course_error 	= "";
+	$c_type 		= "";
+	$image_error 	= "";
+	
+	
+	
+	if(isset($_GET['user_id']))
+	{
+		$user_id	=	$_GET['user_id'];
+		$_SESSION['user_id'] = $user_id;
+	}
+	else if(isset($_SESSION['user_id']))
+	{
+		$user_id	= $_SESSION['user_id'];
+	}
+	
+	if(isset($_GET['ques_id']))
+	{
+		$ques_id	=	$_GET['ques_id'];
+		$_SESSION['ques_id'] = $ques_id;
+	}
+	else if(isset($_SESSION['ques_id']))
+	{
+		$ques_id	= $_SESSION['ques_id'];
+	}
+	
+	$db_user_name	=	$db->get_user_name($user_id);
+	$db_question_title	=	$db->get_question_paper_title($ques_id);
+	if(isset($_POST['staff_assign']))
+	{
+		
+		if($db->set_checked_status_for_answer_key($user_id,$question_id))
+		{
+			$success_msg=1;
+		}
+					
+	}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
+    <title><?php echo $project_title; ?></title>
+    <!-- GLOBAL MAINLY STYLES-->
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/font-awesome.min.css" rel="stylesheet" />
+    <link href="css/line-awesome.min.css" rel="stylesheet" />
+    <link href="css/themify-icons.css" rel="stylesheet" />
+    <link href="css/animate.min.css" rel="stylesheet" />
+    <link href="css/toastr.min.css" rel="stylesheet" />
+    <link href="css/bootstrap-select.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  
+    <!-- THEME STYLES-->
+    <link href="css/main.min.css" rel="stylesheet" />
+	<link href="datatable/datatables.min.css" rel="stylesheet" />
+
+	<link href="css/animate.css" rel="stylesheet" type="text/css" media="all">
+	<script src="js/wow.min.js"></script>
+</head>
+<body class="fixed-navbar">
+  
+<div class="page-wrapper" style="min-height:800px;">
+<?php include('header.php'); ?>
+<?php include('side-bar.php'); ?>
+<div class="content-wrapper">
+
+<div class="page-content fade-in-up">
+<div class="ibox" style="border-radius:5px;padding:7px;">
+	<div class="ibox-head">
+		<div class="ibox-title">Answer Key Report</div>
+		<a href="answer-key-report.php" class="btn btn-outline-danger btn-rounded waves-effect" style="font-style:italic;"><< Answer Key Report </a>
+		
+		<label class="btn btn-outline-danger btn-rounded waves-effect">USER : <?php echo $db_user_name; ?></label>
+		
+		<label class="btn btn-outline-danger btn-rounded waves-effect">Question : <?php echo $db_question_title; ?></label>
+	</div>	
+	
+	<div class="flexbox mb-4" style="margin-left:20px;margin-right:20px;margin-top:20px;">
+		<div class="input-group-icon input-group-icon-left mr-3">
+			<span class="input-icon input-icon-right font-16"><i class="fas fa-search"></i></span>
+			<input class="form-control form-control-rounded form-control-solid" id="key-search" type="text" placeholder="Search ...">
+		</div>
+		
+		
+			
+	</div>
+	
+	<div class="table-wrapper-scroll-y table-wrapper-scroll-x my-custom-scrollbar">
+
+	<div class="table-responsive" id="table_response" style="height:100%; width:100%; overflow:auto;">
+		<table class="table table-bordered table-hover" id="example" >
+			<thead class="thead-default thead-lg">
+				<tr>
+					<th>Sr.No</th>
+					<th>Attachment</th>
+					
+				</tr>
+			</thead>
+			<tbody>
+			<?php
+			
+				$data	=	array();
+				$data	=	$db->get_answer_keys_details_by_individual($user_id,$ques_id);
+				
+				if(!empty($data))
+					{
+						$counter =0;
+						foreach($data as $record)
+						{
+							$res_attachment	=	$record[0];
+							
+							
+							?>
+							<tr> 
+							<td><?php echo $counter+1; ?></td>
+								<?php
+									if($res_attachment!="")
+									{
+									?>
+									<td style="text-align:center;">
+										<a href="../answer-keys/<?php echo $res_attachment; ?>" target="_blank" ><img src="images/attachment.jpg" height="50px" width="50px"></a>
+									</td>
+									<?php
+									}
+									else
+									{
+									?>
+									<td>
+										<a href="icon/no-image.png" target="_blank"><img src="icon/no-image.png" height="50px" width="100px"></a>
+									</td>
+									<?php
+									}
+								?>
+								
+						<?php
+						$counter++;
+						}
+						
+					}
+					
+					else
+					{
+					?>
+					<td>No Data Found...</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<?php
+					}
+			
+			
+				   ?>
+				</tr> 
+			</tbody> 
+		</table> 
+		<div class="row">
+	
+	<div class="col-sm-3 col-md-3 col-lg-3 form-group mb-4">
+	<center>
+	<input type="submit" class="btn btn-pink"  style="margin-left:300px;text-align:center;"  
+	name="staff_assign" value="SUBMIT" onclick="return confirm('Are You Sure for Submit?');" >
+	</center>
+	</div>
+	
+	</div>
+	</div>
+	</div>
+	</div>
+</div>
+
+
+
+</div>
+</div>
+</div>
+    </div>
+    <?php //include('search.php'); ?>
+   
+    <div class="sidenav-backdrop backdrop"></div>
+    <div class="preloader-backdrop">
+        <div class="page-preloader">Loading</div>
+    </div>
+    
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/metisMenu.min.js"></script>
+    <script src="js/jquery.slimscroll.min.js"></script>
+    <script src="js/idle-timer.min.js"></script>
+    <script src="js/toastr.min.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/bootstrap-select.min.js"></script>
+	<script src="datatable/datatables.min.js"></script>
+    <script src="js/app.min.js"></script>
+	
+</body>
+</html>

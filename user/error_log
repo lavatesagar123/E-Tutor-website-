@@ -1,0 +1,2 @@
+[22-Aug-2022 13:18:45 Asia/Kolkata] PHP Warning:  include(search.php): Failed to open stream: No such file or directory in /home4/bravemy8/www.capfpathfinders.com/user/profile.php on line 228
+[22-Aug-2022 13:18:45 Asia/Kolkata] PHP Warning:  include(): Failed opening 'search.php' for inclusion (include_path='.:/opt/cpanel/ea-php80/root/usr/share/pear') in /home4/bravemy8/www.capfpathfinders.com/user/profile.php on line 228
